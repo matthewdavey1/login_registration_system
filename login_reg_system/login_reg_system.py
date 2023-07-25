@@ -6,40 +6,57 @@
 #############################################################################
 def func_login():
 
-
   # Ask User for Username:
   print("You have chosen to login!\n")
-  print("Please Enter a Username:\n")
-  username = input()
 
   # Reading text file, storing as a list in *lines*
-  with open('database.txt') as database:
-    lines = database.read().splitlines()
-    
-  # Check for username in odd numbered elements of list
-  # start:stop:step
-  if username in lines[::2]:
-    print("Please input a password:")
-    password = input()
+  while True:
 
-    # Check for password in even numbered elements in the list
-    if password in lines[1::2]:
-      print("You have Logged in Successfully!!")
-    else:
-      print("Your password was incorrect")
+    username_inp = input("Please Enter Your Username:\n")
 
-  else:
-    print("Username not Found")
+    with open('database.txt', 'r') as database:
+      lines = database.read().splitlines()
+
+      #If the lines.index is a number - checking it is ok - then move on
+      try:
+        lines.index(username_inp)
+
+        password = input("Please input Your password:")
+
+        if lines[lines.index(username_inp) + 1] == password:
+
+          print("You have Logged in Successfully!!")
+
+          # Retuning the inputted username which they use to login
+          # This means that they don't need to enter their username twice
+          return username_inp
+          break
+
+        else:
+          print("Your Password is Incorrect")
+
+    # Except means that it does not work if there is a value error - aka if the index doesn't             output an element number
+      except ValueError:
+        print("Your Username is Incorrect")
+
 
 #############################################################################
 # Register function
 #############################################################################
 
-def func_registration():
-  print("You Have Chosen to Register!")
-  print("Please Enter a Username:")
 
-  username = input()
+def func_registration():
+
+  print("You Have Chosen to Register!")
+
+  username = ""
+  password = ""
+
+  # Stopping people from entering nothing as a username or password
+  while username == "":
+    username = input("Please Enter a Username:")
+    if username == "":
+      print("Sorry, Not a Valid Username!")
 
   # Reading text file, storing as a list in *lines*
   with open('database.txt') as database:
@@ -47,17 +64,19 @@ def func_registration():
 
   # Check for username in odd numbered elements of list
   # start:stop:step
-  if username in lines[::2]: 
+  if username in lines[::2]:
     print("Sorry That Username Already Exists!")
+
   else:
     # Writing the username onto a new line
     with open('database.txt', 'a') as database:
       database.write('\n')
       database.write(username)
 
-    print("Please Enter a Password:")
-
-    password = input()
+    while password == "":
+      password = input("Please Enter a Password:")
+      if password == "":
+        print("Sorry, Not a Valid Password!")
 
     # Writing a password onto a new line
     with open('database.txt', 'a') as database:
@@ -65,85 +84,95 @@ def func_registration():
       database.write(password)
       print("You Have Successfully Registered!!")
 
-#############################################################################
-# Overwrite Line function:
-#############################################################################
-def replace_line(filename, line_number, text):
-  with open(filename) as file:
-    lines = file.readlines()
-
 
 #############################################################################
 # Reset Password:
 #############################################################################
 
+
 def func_reset():
+
   print("You Have Chosen to Change Your Password!")
-  print("Please Enter Your Username:")
+  print("Confirming Login Information")
 
-  username = input()
+  # This is waiting for the login function to follow through until it hits 'return' and then returns the username input so it doesnt need to be entered twice
 
-  # Reading text file, storing as a list in *lines*
-  with open('database.txt') as database:
+  username_inp = func_login()
+
+  # Making sure that 'password'exists beyond the while loop
+  password = ""
+
+  # Equivalent of a do loop - in that it must happen once, and then loops if passwords don't match
+
+  while password == ""
+    password = input("Please Enter a New Password:")
+    if password == input("Please Confirm Your Password:"):
+      break
+    password = ""
+
+  # Establishes a blank array of data
+
+  newdatabase = []
+
+  # Opening the file so it can be overwritten using 'w'
+  with open("database.txt", "r") as database:
+
     lines = database.read().splitlines()
+    found_user = False
+    for line in lines:
+      # If the found user is false (which it isn't by standard) then the line is copied and           added into the new database
+      if found_user == False:
+        newdatabase.append(line)
+      # If the usernername is found, add the new password as the next line below it into the new         data set
+      else:
+        found_user = False
+        newdatabase.append(password)
+      # If the username is found, this triggers the else loop
+      if line == username_inp:
+        found_user = True
 
-  # Check for username in odd numbered elements of list
-  # start:stop:step
-  if username in lines[::2]: 
+  # Clears the original file and overwrites with the new data set - but checking here that the         length of the new data set is the same as the old one
+  with open("database.txt", "w") as database:
+    if len(newdatabase) == len(lines):
+      i = 0
+      while i < len(newdatabase):
+        database.write(newdatabase[i])
+        if i != len(newdatabase) - 1:
+          database.write("\n")
 
+        i += 1
 
-    print("Please Enter a New Password:")
-
-    password = input()
-
-    print("Please Confirm Your Password:")
-
-    password_confirm = input()
-
-    if password == password_confirm:
-
-      # with open('database.txt', 'r') as database:
-      #   line_number = lines.index(username)
-      #   password_line_number = line_number + 1
-
-
-
-      #   database.seek(int(password_line_number))
-      #   database.replace(password_confirm)
-      #   database.truncate()
-        
-        
-
-
-
-
-
+    # The only potential issue with this method is that it has to rewrite all lines in the file -      if this number was massive it isnt ideal - but we are using small data sets
 
 
 #############################################################################
 # Main:
 #############################################################################
-while True: 
-  print("-------------------------------------------")
+while True:
+  try:
+    print("-------------------------------------------")
 
-  print("Welcome to the Login / Registration System!")
-  print("-------------------------------------------\n")
-  print(" 1 - Login\n")
-  print(" 2 - Register\n")
-  print(" 3 - Change Your Password\n")
-  print(" 4 - Exit\n")
-  print("-------------------------------------------")
+    print("Welcome to the Login / Registration System!")
+    print("-------------------------------------------\n")
+    print(" 1 - Login\n")
+    print(" 2 - Register\n")
+    print(" 3 - Change Your Password\n")
+    print(" 4 - Exit\n")
+    print("-------------------------------------------")
 
-  user_input = int(input())
+    user_input = int(input())
 
-  match user_input:
-    case 1:
-      func_login()
-    case 2:
-      func_registration()
-    case 3:
-      func_reset()
-    case 4:
-      break
-    case _:
-      print("Sorry try again!")
+    match user_input:
+      case 1:
+        func_login()
+      case 2:
+        func_registration()
+      case 3:
+        func_reset()
+      case 4:
+        break
+      case _:
+        print("Sorry try again!")
+
+  except:
+    print("Sorry try again!")
